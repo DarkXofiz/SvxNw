@@ -1,0 +1,21 @@
+# SvxNw - Faz 1 veri dosyası
+# Amaç: sayısal değerleri kod yerine buradan düzenleyebilmek (madde 1).
+
+ekonomi:
+  baslangic_bakiyesi: 100
+  sinif_degistirme_bekleme_saat: 24
+  sinif_degistirme_bedeli: 25
+
+gorevler:
+  ilk_adim:
+    ad: "İlk Adım"
+    aciklama: "3 Çürük Et topla ve rehber NPC'ye getir."
+    hedef_sayisi: 3
+    odul_bakiye: 50
+    odul_tecrube: 20
+
+siniflar:
+  akinci:
+    ad: "Akıncı"
+    beceri1_bekleme_sn: 8
+    beceri2_bekleme_sn: 20

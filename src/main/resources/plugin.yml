@@ -1,0 +1,22 @@
+name: SvxNw
+version: '0.1.0-faz1'
+main: com.svxnw.core.SvxNwEklentisi
+api-version: '1.20'
+author: SvxNw Ekibi
+description: "SvxNw - Özgün Türkçe RPG + SMP sunucusu (Faz 1 iskeleti)"
+
+commands:
+  sinif:
+    description: "Sınıf seçim menüsünü açar"
+    usage: /sinif
+  gorevlerim:
+    description: "Aktif görevlerini listeler"
+    usage: /gorevlerim
+
+permissions:
+  svxnw.oyuncu:
+    description: "Temel oyuncu komutları"
+    default: true
+  svxnw.yonetici:
+    description: "Yönetici komutları (ekonomi, görev düzenleme, vb.)"
+    default: op

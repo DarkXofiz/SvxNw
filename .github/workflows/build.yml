@@ -1,0 +1,31 @@
+name: SvxNw Derleme
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+
+      - name: JDK 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Maven ile derle
+        run: mvn -B -U clean package
+
+      - name: Jar'ı artifact olarak yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: svxnw-jar
+          path: target/*.jar
