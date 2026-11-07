@@ -15,26 +15,13 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.List;
+import java.util.UUID;
 
-/**
- * AKINCI - yakın dövüş / tank sınıfı.
- *
- * Pasif: "Çelik Deri" - uğradığı yakın dövüş hasarının %10'unu azaltır
- *        (gerçek uygulama EntityDamageEvent dinleyicisinde yapılmalıdır;
- *        bu sınıf sadece oranı tanımlar, hasar azaltma dinleyicisi Faz 2'de
- *        eklenecektir - bkz. README "Uygulandı/Test Edildi/Eksik" tablosu).
- *
- * Aktif Beceri 1: "Kalkan Hücumu" - 4 blok ileri atılır, önündeki hedeflere
- *        6 kalp (12 damage point) vurur ve 1 sn sersemletir (yavaşlatma
- *        efekti ile simüle edilir). Bekleme süresi: 8 saniye.
- *
- * Aktif Beceri 2: "Savaş Narası" - 6 blok yarıçapındaki tüm dost oyunculara
- *        5 saniye boyunca +1 güç (Strength I) verir. Bekleme süresi: 20 sn.
- */
 public class Akinci implements Sinif {
 
     private static final long BECERI_1_BEKLEME_MS = 8_000L;
     private static final long BECERI_2_BEKLEME_MS = 20_000L;
+    private static final UUID CAN_MODIFIER_UUID = UUID.fromString("c0ffee00-a1b2-4c3d-9e8f-0123456789ab");
 
     @Override
     public String getId() {
@@ -52,12 +39,16 @@ public class Akinci implements Sinif {
         oyuncu.getInventory().addItem(adlandirilmisEsya(Material.LEATHER_CHESTPLATE, "Akıncı Zırhı"));
         oyuncu.getInventory().addItem(new ItemStack(Material.SHIELD));
         AttributeModifier canModifier = new AttributeModifier(
-                "svxnw.akinci.can", 4.0, AttributeModifier.Operation.ADD_NUMBER);
+                CAN_MODIFIER_UUID, "svxnw.akinci.can", 4.0, AttributeModifier.Operation.ADD_NUMBER);
         var canAttr = oyuncu.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-        if (canAttr != null && canAttr.getModifier(canModifier.getUniqueId()) == null) {
-            canAttr.addModifier(canModifier);
+        if (canAttr != null) {
+            boolean zatenVar = canAttr.getModifiers().stream()
+                    .anyMatch(mod -> mod.getUniqueId().equals(CAN_MODIFIER_UUID));
+            if (!zatenVar) {
+                canAttr.addModifier(canModifier);
+            }
+            oyuncu.setHealth(canAttr.getValue());
         }
-        oyuncu.setHealth(oyuncu.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
     }
 
     @Override
@@ -76,7 +67,7 @@ public class Akinci implements Sinif {
         List<LivingEntity> hedefler = yakinHedefleriBul(oyuncu, 3.5);
         for (LivingEntity hedef : hedefler) {
             hedef.damage(12.0, oyuncu);
-            hedef.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20, 3));
+            hedef.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 3));
         }
     }
 
@@ -86,7 +77,7 @@ public class Akinci implements Sinif {
         oyuncu.getWorld().spawnParticle(Particle.SWEEP_ATTACK, oyuncu.getLocation(), 10);
         for (var yakindaki : oyuncu.getWorld().getNearbyEntities(oyuncu.getLocation(), 6, 3, 6)) {
             if (yakindaki instanceof Player dostOyuncu) {
-                dostOyuncu.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 20 * 5, 0));
+                dostOyuncu.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 0));
             }
         }
     }
